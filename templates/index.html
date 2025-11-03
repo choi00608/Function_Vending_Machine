@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Function Vending Machine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --background-color: #0d0d0d;
+            --text-color: #e0e0e0;
+            --primary-color: #00ffff;
+            --secondary-color: #ff00ff;
+            --glow-color: rgba(0, 255, 255, 0.5);
+            --code-background-color: #1a1a1a;
+        }
+
+        body {
+            font-family: 'Orbitron', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            text-shadow: 0 0 10px var(--glow-color), 0 0 20px var(--glow-color), 0 0 30px var(--glow-color);
+            animation: flicker 20s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                    0 0 4px var(--primary-color),
+                    0 0 11px var(--primary-color),
+                    0 0 19px var(--primary-color),
+                    0 0 40px var(--secondary-color),
+                    0 0 80px var(--secondary-color),
+                    0 0 90px var(--secondary-color),
+                    0 0 100px var(--secondary-color),
+                    0 0 150px var(--secondary-color);
+            }
+            20%, 24%, 55% {        
+                text-shadow: none;
+            }
+        }
+
+        form {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 2em;
+            border-radius: 10px;
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--glow-color);
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5em;
+            width: 80%;
+            max-width: 600px;
+        }
+
+        label {
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--primary-color);
+        }
+
+        input[type='text'], textarea {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--primary-color);
+            border-radius: 5px;
+            color: var(--text-color);
+            padding: 1em;
+            font-family: 'Orbitron', sans-serif;
+            box-shadow: inset 0 0 5px var(--glow-color);
+        }
+
+        input[type='submit'] {
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            border: none;
+            border-radius: 5px;
+            padding: 1em;
+            font-family: 'Orbitron', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 0 10px var(--glow-color);
+        }
+
+        input[type='submit']:hover {
+            background-color: var(--secondary-color);
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.8);
+        }
+
+        .code-block {
+            margin-top: 2em;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+            background: var(--code-background-color);
+            padding: 2em;
+            border-radius: 10px;
+            border: 1px solid var(--primary-color);
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        .code-dispensed-label {
+            position: absolute;
+            top: -1em;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            padding: 0.5em 1em;
+            border-radius: 5px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .copy-button {
+            position: absolute;
+            top: 1em;
+            right: 1em;
+            background-color: var(--primary-color);
+            color: var(--background-color);
+            border: none;
+            border-radius: 5px;
+            padding: 0.5em 1em;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+        }
+
+        pre {
+            white-space: pre-wrap;
+            font-size: 1.2em;
+            color: var(--text-color);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 5px solid var(--primary-color);
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            box-shadow: 0 0 15px var(--glow-color);
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .input-summary {
+            margin-bottom: 1em;
+            padding-bottom: 1em;
+            border-bottom: 1px solid var(--primary-color);
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Function Vending Machine</h1>
+    <form id="generate-form" action="/" method="post">
+        <label for="language">Language</label>
+        <input type="text" id="language" name="language" placeholder="e.g., Python" value="{{ form_data.language or '' }}">
+
+        <label for="function_name">Function Name</label>
+        <input type="text" id="function_name" name="function_name" placeholder="e.g., calculate_sum" value="{{ form_data.function_name or '' }}">
+
+        <label for="function_description">Function Description</label>
+        <textarea id="function_description" name="function_description" placeholder="e.g., A function to calculate the sum of two numbers">{{ form_data.function_description or '' }}</textarea>
+
+        <label for="inputs">Inputs (comma-separated)</label>
+        <input type="text" id="inputs" name="inputs" placeholder="e.g., a, b" value="{{ form_data.inputs or '' }}">
+
+        <label for="outputs">Outputs (comma-separated)</label>
+        <input type="text" id="outputs" name="outputs" placeholder="e.g., sum" value="{{ form_data.outputs or '' }}">
+
+        <input type="submit" value="Dispense Code">
+    </form>
+
+    <div id="loading-modal" class="modal">
+        <div class="loader"></div>
+    </div>
+
+    {% if function_code %}
+    <div class="code-block">
+        <div class="code-dispensed-label">Code Dispensed</div>
+        <div class="input-summary">
+            <strong>Language:</strong> {{ form_data.language }}<br>
+            <strong>Function Name:</strong> {{ form_data.function_name }}<br>
+            <strong>Description:</strong> {{ form_data.function_description }}<br>
+            <strong>Inputs:</strong> {{ form_data.inputs }}<br>
+            <strong>Outputs:</strong> {{ form_data.outputs }}
+        </div>
+        <button class="copy-button" onclick="copyCode()">Copy</button>
+        <pre><code id="function-code">{{ function_code }}</code></pre>
+    </div>
+    {% endif %}
+
+    <script>
+        document.getElementById('generate-form').addEventListener('submit', function() {
+            document.getElementById('loading-modal').style.display = 'flex';
+        });
+
+        function copyCode() {
+            const code = document.getElementById('function-code').innerText;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code dispensed to clipboard!');
+            });
+        }
+    </script>
+</body>
+</html>
