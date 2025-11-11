@@ -48,14 +48,22 @@ def parse_json_output(response_text):
 
 def generate_function(language, function_name, function_description, inputs, outputs):
     
-    client = genai.Client()
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt(language, function_name, function_description, inputs, outputs),
-        config={
-            "response_mime_type": "application/json",
-            "response_schema": list[Function_json],
-        },
-    )
+    try:
+        client = genai.Client()
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt(language, function_name, function_description, inputs, outputs),
+            config={
+                "response_mime_type": "application/json",
+                "response_schema": list[Function_json],
+            },
+        )
+        print("API call successful.")
+        print(f'language: {language}')
+        print(f'function_name: {function_name}')
+        print(f'output code: \n{parse_json_output(response.text)}')
+    except Exception as e:
+        print(f"Error during API call: {str(e)}")
+        return f"Error: {str(e)}"
 
     return parse_json_output(response.text)
