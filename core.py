@@ -21,6 +21,7 @@ def prompt(language, function_name, function_description, inputs, outputs):
     Outputs: {outputs}
     make sure to provide only the function code without any additional text.
     don`t use unnecessary logic or libraries. just focus on the function implementation.
+    carefully use the line breaks and indentation as per {language} standards. especially for Python, use tab for indentation.
     """
 
 def extract_json_from_response(response_text):
