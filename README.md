@@ -51,3 +51,5 @@ A web-based application that generates functions based on user specifications, w
 2.  Open your web browser and go to `http://127.0.0.1:8080`.
 
 3.  Fill in the form with the desired function specifications and click "Dispense Code".
+
+4.  or just activate run.cmd
