@@ -34,10 +34,17 @@ A web-based application that generates functions based on user specifications, w
 
 4.  **Set the environment variable:**
 
-    Create a `.env` file in the root directory and add your Google API key:
-
+    - **Windows (CMD):**
     ```
-    GOOGLE_API_KEY=your-api-key
+    set GEMINI_API_KEY="YOUR_API_KEY"
+    ```
+    - **Windows (PowerShell):**
+    ```
+    $env:GEMINI_API_KEY="YOUR_API_KEY"
+    ```
+    - **macOS/Linux:**
+    ```
+    export GEMINI_API_KEY="YOUR_API_KEY"
     ```
 
 ## Usage
